@@ -1,6 +1,26 @@
 from os import listdir
 from os.path import isfile, join
 import os
+import tkinter
+
+
+
+class Scrollbox(tkinter.Listbox):
+    def __init__(self, window, **kwargs):
+        super().__init__(window, **kwargs)
+
+        self.scrollbar = tkinter.Scrollbar(window, orient=tkinter.VERTICAL,
+                                           command=self.yview)
+
+    def grid(self, row, column, sticky='nse', rowspan=1, columnspan=1,
+             **kwargs):
+
+        super().grid(row=row, column=column, sticky=sticky, rowspan=rowspan,
+                     columnspan=columnspan, **kwargs)
+        self.scrollbar.grid(row=row, column=column, stick='nse',
+                            rowspan=rowspan)
+        self['yscrollcommand'] = self.scrollbar.set
+
 
 # global dict of files, key is  file types, values will be array or tuple of
 # files themselves.
