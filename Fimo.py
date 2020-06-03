@@ -3,7 +3,7 @@ from os.path import isfile, isdir, join
 import os
 import tkinter
 
-# global dict of files, key is  file types, values will be array or tuple of
+# global dict of files, key is file types, values will be array or tuple of
 # files themselves.
 
 #create gui to list directories then based on directory list all extensions
@@ -34,7 +34,6 @@ class DataListBox(Scrollbox):
         super().__init__(window, **kwargs)
 
         self.linked_box = None
-        self.link_field = None
         self.link_value = None
         self.path = path
         self.bind('<<ListboxSelect>>', self.on_select)
@@ -43,31 +42,30 @@ class DataListBox(Scrollbox):
     def clear(self):
         self.delete(0, tkinter.END)
 
-    def link(self, widget, link_field):
+    def link(self, widget):
         self.linked_box = widget
-        widget.link_field = link_field
 
     def requery(self, link_value=None):
+
         self.link_value = link_value
-        for d in os.listdir(path):
-            if isdir(join(path, d)) and not d.startswith('.'):
-                 self.insert('end', d)
+
+        if link_value:
+            self.clear()
+            for d in os.listdir("{}/{}".format(path, link_value)):
+                    self.insert('end', d)
+        else:
+            for d in os.listdir(path):
+                 if isdir(join(path, d)) and not d.startswith('.'):
+                     self.insert('end', d)
 
     def on_select(self, event):
         if self.linked_box:
             print("self is event.widget")
             index = self.curselection()[0]
             value = self.get(index),
+            chosen_path = value[0]
 
-            if self.link_value:
-                value = value[0], self.link_value
-                sql_where = " WHERE " + self.field + " =? AND " + \
-                            self.link_field + "=?"
-            else:
-                sql_where = " WHERE " + self.field + "=?"
-            link_id = self.cursor.execute(self.sql_select + sql_where,
-                                          value).fetchone()[1]
-            self.linked_box.requery(link_id)
+            self.linked_box.requery(chosen_path)
 
 #create folders based on extension
 
@@ -116,19 +114,22 @@ tkinter.Label(m_window, text="Extensions").grid(row=0, column=2)
 
 # === Directories listbox ===
 directories_list = DataListBox(m_window, path)
-directories_list.grid(row=1, column=0, sticky='nsew', rowspan=2, padx=(30, 0))
+directories_list.grid(row=1, column=0, sticky='nsew', rowspan=1, padx=(30, 0))
 directories_list.config(border=2, relief='sunken')
 directories_list.requery()
 
 
-    # === Folders listbox ===
-folders_list = tkinter.Listbox(m_window)
-folders_list.grid(row=1, column=1, sticky='nsew', rowspan=2, padx=(30, 0))
+# === File List listbox ===
+file_lv = tkinter.Variable(m_window)
+file_lv.set(("choose a directory",))
+folders_list = DataListBox(m_window, path)
+folders_list.grid(row=1, column=1, sticky='nsew', rowspan=1, padx=(30, 0))
 folders_list.config(border=2, relief='sunken')
+directories_list.link(folders_list)
 
 # === Extensions listbox ===
 extensions_list = tkinter.Listbox(m_window)
-extensions_list.grid(row=1, column=2, sticky='nsew', rowspan=2, padx=(30, 0))
+extensions_list.grid(row=1, column=2, sticky='nsew', rowspan=1, padx=(30, 0))
 extensions_list.config(border=2, relief='sunken')
 
 m_window.mainloop()
