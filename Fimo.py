@@ -12,7 +12,62 @@ import tkinter
 #
 path = "/Users/maxbrooks"
 
+class Scrollbox(tkinter.Listbox):
+    def __init__(self, window, **kwargs):
+        super().__init__(window, **kwargs)
 
+        self.scrollbar = tkinter.Scrollbar(window, orient=tkinter.VERTICAL,
+                                           command=self.yview)
+
+    def grid(self, row, column, sticky='nse', rowspan=1, columnspan=1,
+             **kwargs):
+
+        super().grid(row=row, column=column, sticky=sticky, rowspan=rowspan,
+                     columnspan=columnspan, **kwargs)
+        self.scrollbar.grid(row=row, column=column, stick='nse',
+                            rowspan=rowspan)
+        self['yscrollcommand'] = self.scrollbar.set
+
+
+class DataListBox(Scrollbox):
+    def __init__(self, window, path, **kwargs):
+        super().__init__(window, **kwargs)
+
+        self.linked_box = None
+        self.link_field = None
+        self.link_value = None
+        self.path = path
+        self.bind('<<ListboxSelect>>', self.on_select)
+
+
+    def clear(self):
+        self.delete(0, tkinter.END)
+
+    def link(self, widget, link_field):
+        self.linked_box = widget
+        widget.link_field = link_field
+
+    def requery(self, link_value=None):
+        self.link_value = link_value
+        for d in os.listdir(path):
+            if isdir(join(path, d)) and not d.startswith('.'):
+                 self.insert('end', d)
+
+    def on_select(self, event):
+        if self.linked_box:
+            print("self is event.widget")
+            index = self.curselection()[0]
+            value = self.get(index),
+
+            if self.link_value:
+                value = value[0], self.link_value
+                sql_where = " WHERE " + self.field + " =? AND " + \
+                            self.link_field + "=?"
+            else:
+                sql_where = " WHERE " + self.field + "=?"
+            link_id = self.cursor.execute(self.sql_select + sql_where,
+                                          value).fetchone()[1]
+            self.linked_box.requery(link_id)
 
 #create folders based on extension
 
@@ -60,12 +115,10 @@ tkinter.Label(m_window, text="Folders").grid(row=0, column=1)
 tkinter.Label(m_window, text="Extensions").grid(row=0, column=2)
 
 # === Directories listbox ===
-directories_list = tkinter.Listbox(m_window)
+directories_list = DataListBox(m_window, path)
 directories_list.grid(row=1, column=0, sticky='nsew', rowspan=2, padx=(30, 0))
 directories_list.config(border=2, relief='sunken')
-for d in os.listdir(path):
-    if isdir(join(path, d)) and not d.startswith('.'):
-        directories_list.insert('end', d)
+directories_list.requery()
 
 
     # === Folders listbox ===
