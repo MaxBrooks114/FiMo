@@ -39,7 +39,6 @@ class DataListBox(Scrollbox):
         self.path = path
         self.bind('<<ListboxSelect>>', self.on_select)
 
-
     def clear(self):
         self.delete(0, tkinter.END)
 
@@ -54,7 +53,7 @@ class DataListBox(Scrollbox):
         if link_value and self.link_field == "files":
             self.clear()
             for d in os.listdir("{}/{}".format(path, link_value)):
-                    self.insert('end', d)
+                self.insert('end', d)
 
         elif link_value and self.link_field == "extensions":
             self.clear()
@@ -80,27 +79,6 @@ class DataListBox(Scrollbox):
             chosen_path = value[0]
 
             self.linked_box.requery(chosen_path)
-
-#create folders based on extension
-
-#populate folders with the files of that extension
-
-
-os.chdir(path)
-
-file_types = []
-
-#use a list comp to get a list of files in the downloads folder
-files = [f for f in listdir(path) if isfile(join(path, f))]
-
-for file in files:
-  file_type = file.split(".")[-1]
-  if file_type not in file_types:
-      file_types.append(file_type)
-
-print(file_types)
-
-print(os.listdir(path))
 
 
 m_window = tkinter.Tk()
@@ -138,6 +116,8 @@ extensions_list = DataListBox(m_window, path)
 extensions_list.grid(row=1, column=2, sticky='nsew', rowspan=1, padx=(30, 0))
 extensions_list.config(border=2, relief='sunken')
 directories_list.link(extensions_list, "extensions")
+
+
 
 m_window.mainloop()
 
