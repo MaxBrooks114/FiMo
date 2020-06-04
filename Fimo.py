@@ -35,6 +35,7 @@ class DataListBox(Scrollbox):
 
         self.linked_box = None
         self.link_value = None
+        self.link_field = None
         self.path = path
         self.bind('<<ListboxSelect>>', self.on_select)
 
@@ -42,17 +43,30 @@ class DataListBox(Scrollbox):
     def clear(self):
         self.delete(0, tkinter.END)
 
-    def link(self, widget):
+    def link(self, widget, link_field=None):
         self.linked_box = widget
+        widget.link_field = link_field
 
-    def requery(self, link_value=None):
+    def requery(self, link_value=None, link_field=None):
 
         self.link_value = link_value
 
-        if link_value:
+        if link_value and self.link_field == "files":
             self.clear()
             for d in os.listdir("{}/{}".format(path, link_value)):
                     self.insert('end', d)
+
+        elif link_value and self.link_field == "extensions":
+            self.clear()
+            file_types = []
+            files = [f for f in listdir("{}/{}".format(path, link_value)) if
+                   isfile(join("{}/{}".format(path, link_value), f))]
+
+            for file in files:
+                file_type = file.split(".")[-1]
+                if file_type not in file_types:
+                    file_types.append(file_type)
+                    self.insert('end',file_type)
         else:
             for d in os.listdir(path):
                  if isdir(join(path, d)) and not d.startswith('.'):
@@ -70,12 +84,6 @@ class DataListBox(Scrollbox):
 #create folders based on extension
 
 #populate folders with the files of that extension
-
-
-
-files = {}
-
-
 
 
 os.chdir(path)
@@ -120,17 +128,16 @@ directories_list.requery()
 
 
 # === File List listbox ===
-file_lv = tkinter.Variable(m_window)
-file_lv.set(("choose a directory",))
 folders_list = DataListBox(m_window, path)
 folders_list.grid(row=1, column=1, sticky='nsew', rowspan=1, padx=(30, 0))
 folders_list.config(border=2, relief='sunken')
-directories_list.link(folders_list)
+directories_list.link(folders_list, "files")
 
 # === Extensions listbox ===
-extensions_list = tkinter.Listbox(m_window)
+extensions_list = DataListBox(m_window, path)
 extensions_list.grid(row=1, column=2, sticky='nsew', rowspan=1, padx=(30, 0))
 extensions_list.config(border=2, relief='sunken')
+directories_list.link(extensions_list, "extensions")
 
 m_window.mainloop()
 
