@@ -34,7 +34,7 @@ class DataListBox(Scrollbox):
     def __init__(self, window, path, **kwargs):
         super().__init__(window, **kwargs)
 
-        self.linked_box = None
+        self.linked_boxes = []
         self.link_value = None
         self.link_field = None
         self.path = path
@@ -44,7 +44,7 @@ class DataListBox(Scrollbox):
         self.delete(0, tkinter.END)
 
     def link(self, widget, link_field=None):
-        self.linked_box = widget
+        self.linked_boxes.append(widget)
         widget.link_field = link_field
 
     def requery(self, link_value=None):
@@ -67,19 +67,20 @@ class DataListBox(Scrollbox):
                 if file_type not in file_types:
                     file_types.append(file_type)
                     self.insert('end', file_type)
+
         else:
             for d in os.listdir(my_path):
                 if isdir(join(my_path, d)) and not d.startswith('.'):
                     self.insert('end', d)
 
-    def on_select(self):
-        if self.linked_box:
+    def on_select(self, event):
+        if self.linked_boxes:
             print("self is event.widget")
             index = self.curselection()[0]
             value = self.get(index),
             chosen_path = value[0]
-
-            self.linked_box.requery(chosen_path)
+            for widget in self.linked_boxes:
+                widget.requery(chosen_path)
 
 
 m_window = tkinter.Tk()
