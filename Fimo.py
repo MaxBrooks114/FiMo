@@ -6,11 +6,12 @@ import tkinter
 # global dict of files, key is file types, values will be array or tuple of
 # files themselves.
 
-#create gui to list directories then based on directory list all extensions
+# create gui to list directories then based on directory list all extensions
 # in that directory
 
 #
-path = "/Users/maxbrooks"
+my_path = "/Users/maxbrooks"
+
 
 class Scrollbox(tkinter.Listbox):
     def __init__(self, window, **kwargs):
@@ -46,32 +47,32 @@ class DataListBox(Scrollbox):
         self.linked_box = widget
         widget.link_field = link_field
 
-    def requery(self, link_value=None, link_field=None):
+    def requery(self, link_value=None):
 
         self.link_value = link_value
 
         if link_value and self.link_field == "files":
             self.clear()
-            for d in os.listdir("{}/{}".format(path, link_value)):
+            for d in os.listdir("{}/{}".format(my_path, link_value)):
                 self.insert('end', d)
 
         elif link_value and self.link_field == "extensions":
             self.clear()
             file_types = []
-            files = [f for f in listdir("{}/{}".format(path, link_value)) if
-                   isfile(join("{}/{}".format(path, link_value), f))]
+            files = [f for f in listdir("{}/{}".format(my_path, link_value)) if
+                     isfile(join("{}/{}".format(my_path, link_value), f))]
 
             for file in files:
                 file_type = file.split(".")[-1]
                 if file_type not in file_types:
                     file_types.append(file_type)
-                    self.insert('end',file_type)
+                    self.insert('end', file_type)
         else:
-            for d in os.listdir(path):
-                 if isdir(join(path, d)) and not d.startswith('.'):
-                     self.insert('end', d)
+            for d in os.listdir(my_path):
+                if isdir(join(my_path, d)) and not d.startswith('.'):
+                    self.insert('end', d)
 
-    def on_select(self, event):
+    def on_select(self):
         if self.linked_box:
             print("self is event.widget")
             index = self.curselection()[0]
@@ -99,35 +100,22 @@ tkinter.Label(m_window, text="Folders").grid(row=0, column=1)
 tkinter.Label(m_window, text="Extensions").grid(row=0, column=2)
 
 # === Directories listbox ===
-directories_list = DataListBox(m_window, path)
+directories_list = DataListBox(m_window, my_path)
 directories_list.grid(row=1, column=0, sticky='nsew', rowspan=1, padx=(30, 0))
 directories_list.config(border=2, relief='sunken')
 directories_list.requery()
 
 
 # === File List listbox ===
-folders_list = DataListBox(m_window, path)
+folders_list = DataListBox(m_window, my_path)
 folders_list.grid(row=1, column=1, sticky='nsew', rowspan=1, padx=(30, 0))
 folders_list.config(border=2, relief='sunken')
 directories_list.link(folders_list, "files")
 
 # === Extensions listbox ===
-extensions_list = DataListBox(m_window, path)
+extensions_list = DataListBox(m_window, my_path)
 extensions_list.grid(row=1, column=2, sticky='nsew', rowspan=1, padx=(30, 0))
 extensions_list.config(border=2, relief='sunken')
 directories_list.link(extensions_list, "extensions")
 
-
-
 m_window.mainloop()
-
-
-
-
-
-
-
-
-
-
-
