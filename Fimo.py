@@ -24,10 +24,10 @@ def create_folder():
     extension = extensions_list.get(extension_index)
     print(extension)
     path = join(parent, extension)
-    if not path:
+    if path not in listdir(parent):
         os.mkdir(path)
     for file in listdir(parent):
-        if file.split(".")[-1] == extension:
+        if file.split(".")[-1] == extension and isdir(path):
             shutil.move(join(parent, file), path)
 
 
