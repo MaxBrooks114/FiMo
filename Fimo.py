@@ -12,6 +12,8 @@ import tkinter
 #
 my_path = "/Users/maxbrooks"
 
+def create_folder():
+    print("Make a folder with these extensions dawg")
 
 class Scrollbox(tkinter.Listbox):
     def __init__(self, window, **kwargs):
@@ -97,8 +99,8 @@ m_window.rowconfigure(3, weight=1)
 
 # ===labels===
 tkinter.Label(m_window, text="Directories").grid(row=0, column=0)
-tkinter.Label(m_window, text="Folders").grid(row=0, column=1)
-tkinter.Label(m_window, text="Extensions").grid(row=0, column=2)
+tkinter.Label(m_window, text="Files and Folders").grid(row=0, column=1)
+tkinter.Label(m_window, text="Loose File Extensions").grid(row=0, column=2)
 
 # === Directories listbox ===
 directories_list = DataListBox(m_window, my_path)
@@ -118,5 +120,10 @@ extensions_list = DataListBox(m_window, my_path)
 extensions_list.grid(row=1, column=2, sticky='nsew', rowspan=1, padx=(30, 0))
 extensions_list.config(border=2, relief='sunken')
 directories_list.link(extensions_list, "extensions")
+
+# create extensions folder button
+new_button = tkinter.Button(m_window, text = "Create Folder",
+                            command=create_folder)
+new_button.grid(row=2, column=2, sticky='se')
 
 m_window.mainloop()
