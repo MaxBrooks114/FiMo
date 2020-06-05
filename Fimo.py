@@ -2,6 +2,8 @@ from os import listdir
 from os.path import isfile, isdir, join
 import os
 import tkinter
+from pathlib import Path
+
 
 # global dict of files, key is file types, values will be array or tuple of
 # files themselves.
@@ -10,10 +12,18 @@ import tkinter
 # in that directory
 
 #
-my_path = "/Users/maxbrooks"
+home = str(Path.home())
+my_path = home
+
 
 def create_folder():
     print("Make a folder with these extensions dawg")
+    index = folders_list.curselection()[0]
+    value = folders_list.get(index)
+    chosen_path = value
+    path = join(my_path, chosen_path)
+    print(path)
+
 
 class Scrollbox(tkinter.Listbox):
     def __init__(self, window, **kwargs):
@@ -85,6 +95,8 @@ class DataListBox(Scrollbox):
                 widget.requery(chosen_path)
 
 
+
+
 m_window = tkinter.Tk()
 m_window.title('FiMo Folder Cleanup Tool')
 m_window.geometry('1024x768')
@@ -122,7 +134,7 @@ extensions_list.config(border=2, relief='sunken')
 directories_list.link(extensions_list, "extensions")
 
 # create extensions folder button
-new_button = tkinter.Button(m_window, text = "Create Folder",
+new_button = tkinter.Button(m_window, text="Create Folder",
                             command=create_folder)
 new_button.grid(row=2, column=2, sticky='se')
 
