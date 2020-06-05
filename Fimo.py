@@ -3,6 +3,7 @@ from os.path import isfile, isdir, join
 import os
 import tkinter
 from pathlib import Path
+import shutil
 
 
 # global dict of files, key is file types, values will be array or tuple of
@@ -25,6 +26,10 @@ def create_folder():
     path = join(parent, extension)
     if not path:
         os.mkdir(path)
+    for file in listdir(parent):
+        if file.split(".")[-1] == extension:
+            shutil.move(join(parent, file), path)
+
 
 
 class Scrollbox(tkinter.Listbox):
