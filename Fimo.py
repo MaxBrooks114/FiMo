@@ -18,11 +18,13 @@ my_path = home
 
 def create_folder():
     print("Make a folder with these extensions dawg")
-    index = folders_list.curselection()[0]
-    value = folders_list.get(index)
-    chosen_path = value
-    path = join(my_path, chosen_path)
-    print(path)
+    parent = join(my_path, folders_list.link_value)
+    extension_index = extensions_list.curselection()[0]
+    extension = extensions_list.get(extension_index)
+    print(extension)
+    path = join(parent, extension)
+    if not path:
+        os.mkdir(path)
 
 
 class Scrollbox(tkinter.Listbox):
@@ -65,13 +67,13 @@ class DataListBox(Scrollbox):
 
         if link_value and self.link_field == "files":
             self.clear()
-            for d in os.listdir("{}/{}".format(my_path, link_value)):
+            for d in os.listdir(join(my_path, link_value)):
                 self.insert('end', d)
 
         elif link_value and self.link_field == "extensions":
             self.clear()
             file_types = []
-            files = [f for f in listdir("{}/{}".format(my_path, link_value)) if
+            files = [f for f in listdir(join(my_path, link_value)) if
                      isfile(join("{}/{}".format(my_path, link_value), f))]
 
             for file in files:
@@ -88,7 +90,7 @@ class DataListBox(Scrollbox):
     def on_select(self, event):
         if self.linked_boxes:
             print("self is event.widget")
-            index = self.curselection()[0]
+            index = self.curselection()
             value = self.get(index),
             chosen_path = value[0]
             for widget in self.linked_boxes:
