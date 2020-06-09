@@ -2,6 +2,7 @@ from os import listdir
 from os.path import isfile, isdir, join
 import os
 import tkinter
+from tkinter import messagebox
 from pathlib import Path
 import shutil
 
@@ -24,11 +25,18 @@ def create_folder():
     extension = extensions_list.get(extension_index)
     print(extension)
     path = join(parent, extension)
-    if path not in listdir(parent):
-        os.mkdir(path)
-    for file in listdir(parent):
-        if file.split(".")[-1] == extension and isdir(path):
-            shutil.move(join(parent, file), path)
+    msg = tkinter.messagebox.askyesno(title=None, message="Are you sure you "
+                                                        "want "
+                                                    "to make a folder with "
+                                                    "all your loose {} "
+                                                    "files?".format(
+        extension))
+    if msg == "yes":
+        if path not in listdir(parent):
+            os.mkdir(path)
+        for file in listdir(parent):
+            if file.split(".")[-1] == extension and isdir(path):
+                shutil.move(join(parent, file), path)
 
 
 
@@ -100,8 +108,6 @@ class DataListBox(Scrollbox):
             chosen_path = value[0]
             for widget in self.linked_boxes:
                 widget.requery(chosen_path)
-
-
 
 
 m_window = tkinter.Tk()
