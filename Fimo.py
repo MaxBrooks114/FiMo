@@ -25,18 +25,24 @@ def create_folder():
     extension = extensions_list.get(extension_index)
     print(extension)
     path = join(parent, extension)
-    msg = tkinter.messagebox.askyesno(title=None, message="Are you sure you "
+    msg = tkinter.messagebox.askquestion(title=None, message="Are you sure "
+                                                             "you "
                                                         "want "
                                                     "to make a folder with "
                                                     "all your loose {} "
-                                                    "files?".format(
-        extension))
+                                                    "files?".format(extension))
     if msg == "yes":
         if path not in listdir(parent):
             os.mkdir(path)
+        print("folder created")
+        tkinter.messagebox.showinfo(title=None, message="A {} folder has been created.".format(extension))
+        moved_file_list = []
         for file in listdir(parent):
             if file.split(".")[-1] == extension and isdir(path):
                 shutil.move(join(parent, file), path)
+                moved_file_list.append(file)
+                print("{} moved".format(file))
+        tkinter.messagebox.showinfo(title=None, message="The following files have been moved: {}".format(moved_file_list))
 
 
 
