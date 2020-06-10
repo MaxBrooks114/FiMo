@@ -6,7 +6,6 @@ from tkinter import messagebox
 from pathlib import Path
 import shutil
 
-
 # global dict of files, key is file types, values will be array or tuple of
 # files themselves.
 
@@ -15,35 +14,56 @@ import shutil
 
 #
 home = str(Path.home())
-my_path = home
 
 
 def create_folder():
     print("Make a folder with these extensions dawg")
-    parent = join(my_path, folders_list.link_value)
+    parent = join(home, folders_list.link_value)
     extension_index = extensions_list.curselection()[0]
     extension = extensions_list.get(extension_index)
     print(extension)
     path = join(parent, extension)
+    print (path)
     msg = tkinter.messagebox.askquestion(title=None, message="Are you sure "
                                                              "you "
-                                                        "want "
-                                                    "to make a folder with "
-                                                    "all your loose {} "
-                                                    "files?".format(extension))
+                                                             "want "
+                                                             "to make a "
+                                                             "folder with "
+                                                             "all of your "
+                                                             "loose {} "
+                                                             "files? "
+                                                             "*note "
+                                                             "that if "
+                                                             "the "
+                                                             "folder "
+                                                             "already "
+                                                             "exists, "
+                                                             "the "
+                                                             "files "
+                                                             "will be "
+                                                             "moved "
+                                                             "into "
+                                                             "that "
+                                                             "folder".format(
+        extension))
     if msg == "yes":
-        if path not in listdir(parent):
+        if extension in path and path not in listdir(parent):
             os.mkdir(path)
-        print("folder created")
-        tkinter.messagebox.showinfo(title=None, message="A {} folder has been created.".format(extension))
+            print("folder created")
+            tkinter.messagebox.showinfo(title=None, message="A {} folder has "
+                                                        "been "
+                                                        "created.".format(
+            extension))
         moved_file_list = []
         for file in listdir(parent):
             if file.split(".")[-1] == extension and isdir(path):
                 shutil.move(join(parent, file), path)
                 moved_file_list.append(file)
                 print("{} moved".format(file))
-        tkinter.messagebox.showinfo(title=None, message="The following files have been moved: {}".format(moved_file_list))
-
+        tkinter.messagebox.showinfo(title=None, message="The following "
+                                                        "files have been "
+                                                        "moved: {}".format(
+            moved_file_list))
 
 
 class Scrollbox(tkinter.Listbox):
@@ -55,7 +75,6 @@ class Scrollbox(tkinter.Listbox):
 
     def grid(self, row, column, sticky='nse', rowspan=1, columnspan=1,
              **kwargs):
-
         super().grid(row=row, column=column, sticky=sticky, rowspan=rowspan,
                      columnspan=columnspan, **kwargs)
         self.scrollbar.grid(row=row, column=column, stick='nse',
@@ -86,14 +105,14 @@ class DataListBox(Scrollbox):
 
         if link_value and self.link_field == "files":
             self.clear()
-            for d in os.listdir(join(my_path, link_value)):
+            for d in os.listdir(join(home, link_value)):
                 self.insert('end', d)
 
         elif link_value and self.link_field == "extensions":
             self.clear()
             file_types = []
-            files = [f for f in listdir(join(my_path, link_value)) if
-                     isfile(join("{}/{}".format(my_path, link_value), f))]
+            files = [f for f in listdir(join(home, link_value)) if
+                     isfile(join("{}/{}".format(home, link_value), f))]
 
             for file in files:
                 file_type = file.split(".")[-1]
@@ -102,8 +121,8 @@ class DataListBox(Scrollbox):
                     self.insert('end', file_type)
 
         else:
-            for d in os.listdir(my_path):
-                if isdir(join(my_path, d)) and not d.startswith('.'):
+            for d in os.listdir(home):
+                if isdir(join(home, d)) and not d.startswith('.'):
                     self.insert('end', d)
 
     def on_select(self, event):
@@ -134,20 +153,19 @@ tkinter.Label(m_window, text="Files and Folders").grid(row=0, column=1)
 tkinter.Label(m_window, text="Loose File Extensions").grid(row=0, column=2)
 
 # === Directories listbox ===
-directories_list = DataListBox(m_window, my_path)
+directories_list = DataListBox(m_window, home)
 directories_list.grid(row=1, column=0, sticky='nsew', rowspan=1, padx=(30, 0))
 directories_list.config(border=2, relief='sunken')
 directories_list.requery()
 
-
 # === File List listbox ===
-folders_list = DataListBox(m_window, my_path)
+folders_list = DataListBox(m_window, home)
 folders_list.grid(row=1, column=1, sticky='nsew', rowspan=1, padx=(30, 0))
 folders_list.config(border=2, relief='sunken')
 directories_list.link(folders_list, "files")
 
 # === Extensions listbox ===
-extensions_list = DataListBox(m_window, my_path)
+extensions_list = DataListBox(m_window, home)
 extensions_list.grid(row=1, column=2, sticky='nsew', rowspan=1, padx=(30, 0))
 extensions_list.config(border=2, relief='sunken')
 directories_list.link(extensions_list, "extensions")
