@@ -2,11 +2,16 @@ from os import listdir
 from os.path import isfile, isdir, join
 import os
 import tkinter
-from tkinter import messagebox
+from tkinter import filedialog
 from pathlib import Path
 import shutil
 
+
 home = str(Path.home())
+
+
+def choose_directory():
+    tkinter.filedialog.askdirectory()
 
 
 def create_folder():
@@ -167,5 +172,11 @@ directories_list.link(extensions_list, "extensions")
 new_button = tkinter.Button(m_window, text="Create Folder",
                             command=create_folder)
 new_button.grid(row=2, column=2, sticky='se')
+
+# create file explorer button
+new_button = tkinter.Button(m_window, text="Choose Directory",
+                            command=choose_directory)
+new_button.grid(row=2, column=0, sticky='se')
+
 
 m_window.mainloop()
