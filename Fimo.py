@@ -6,13 +6,6 @@ from tkinter import messagebox
 from pathlib import Path
 import shutil
 
-# global dict of files, key is file types, values will be array or tuple of
-# files themselves.
-
-# create gui to list directories then based on directory list all extensions
-# in that directory
-
-#
 home = str(Path.home())
 
 
