@@ -2,21 +2,27 @@ from os import listdir
 from os.path import isfile, isdir, join
 import os
 import tkinter
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from pathlib import Path
 import shutil
 
 
 home = str(Path.home())
+chosen_directory = home
 
 
 def choose_directory():
-    tkinter.filedialog.askdirectory()
+    global chosen_directory
+    chosen_directory = tkinter.filedialog.askdirectory()
+    if not chosen_directory:
+        chosen_directory = home
+    print(chosen_directory)
+    directories_list.requery()
 
 
 def create_folder():
     print("Make a folder with these extensions dawg")
-    parent = join(home, folders_list.link_value)
+    parent = join(chosen_directory, folders_list.link_value)
     extension_index = extensions_list.curselection()[0]
     extension = extensions_list.get(extension_index)
     print(extension)
@@ -103,14 +109,14 @@ class DataListBox(Scrollbox):
 
         if link_value and self.link_field == "files":
             self.clear()
-            for d in os.listdir(join(home, link_value)):
+            for d in os.listdir(join(chosen_directory, link_value)):
                 self.insert('end', d)
 
         elif link_value and self.link_field == "extensions":
             self.clear()
             file_types = []
-            files = [f for f in listdir(join(home, link_value)) if
-                     isfile(join("{}/{}".format(home, link_value), f))]
+            files = [f for f in listdir(join(chosen_directory, link_value)) if
+                     isfile(join("{}/{}".format(chosen_directory, link_value), f))]
 
             for file in files:
                 file_type = file.split(".")[-1]
@@ -119,9 +125,15 @@ class DataListBox(Scrollbox):
                     self.insert('end', file_type)
 
         else:
-            for d in os.listdir(home):
-                if isdir(join(home, d)) and not d.startswith('.'):
-                    self.insert('end', d)
+            self.clear()
+            if not chosen_directory:
+                for d in os.listdir(home):
+                    if isdir(join(home, d)) and not d.startswith('.'):
+                        self.insert('end', d)
+            else:
+                for d in os.listdir(chosen_directory):
+                    if isdir(join(chosen_directory, d)) and not d.startswith('.'):
+                        self.insert('end', d)
 
     def on_select(self, event):
         if self.linked_boxes:
@@ -135,7 +147,7 @@ class DataListBox(Scrollbox):
 
 m_window = tkinter.Tk()
 m_window.title('FiMo Folder Cleanup Tool')
-m_window.geometry('1024x768')
+m_window.geometry('768x480')
 m_window.columnconfigure(0, weight=2)
 m_window.columnconfigure(1, weight=2)
 m_window.columnconfigure(2, weight=2)
@@ -151,19 +163,19 @@ tkinter.Label(m_window, text="Files and Folders").grid(row=0, column=1)
 tkinter.Label(m_window, text="Loose File Extensions").grid(row=0, column=2)
 
 # === Directories listbox ===
-directories_list = DataListBox(m_window, home)
+directories_list = DataListBox(m_window, chosen_directory)
 directories_list.grid(row=1, column=0, sticky='nsew', rowspan=1, padx=(30, 0))
 directories_list.config(border=2, relief='sunken')
 directories_list.requery()
 
 # === File List listbox ===
-folders_list = DataListBox(m_window, home)
+folders_list = DataListBox(m_window, chosen_directory)
 folders_list.grid(row=1, column=1, sticky='nsew', rowspan=1, padx=(30, 0))
 folders_list.config(border=2, relief='sunken')
 directories_list.link(folders_list, "files")
 
 # === Extensions listbox ===
-extensions_list = DataListBox(m_window, home)
+extensions_list = DataListBox(m_window, chosen_directory)
 extensions_list.grid(row=1, column=2, sticky='nsew', rowspan=1, padx=(30, 0))
 extensions_list.config(border=2, relief='sunken')
 directories_list.link(extensions_list, "extensions")
@@ -171,12 +183,12 @@ directories_list.link(extensions_list, "extensions")
 # create extensions folder button
 new_button = tkinter.Button(m_window, text="Create Folder",
                             command=create_folder)
-new_button.grid(row=2, column=2, sticky='se')
+new_button.grid(row=2, column=2, sticky='new')
 
 # create file explorer button
 new_button = tkinter.Button(m_window, text="Choose Directory",
                             command=choose_directory)
-new_button.grid(row=2, column=0, sticky='se')
+new_button.grid(row=2, column=0, sticky='new')
 
 
 m_window.mainloop()
