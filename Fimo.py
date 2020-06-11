@@ -197,5 +197,5 @@ new_button = tkinter.Button(m_window, text="Choose Directory",
                             command=d_selector.choose_directory)
 new_button.grid(row=2, column=0, sticky='new')
 
-
-m_window.mainloop()
+if __name__ == "__main__":
+    m_window.mainloop()
