@@ -7,7 +7,7 @@ from pathlib import Path
 import shutil
 
 
-class Directory_Selector():
+class DirectorySelector:
     def __init__(self):
         self.home = str(Path.home())
         self.chosen_directory = self.home
@@ -23,9 +23,7 @@ class Directory_Selector():
                       folders_list.link_value)
         extension_index = extensions_list.curselection()[0]
         extension = extensions_list.get(extension_index)
-        print(extension)
         ext_path = join(parent, extension)
-        print(ext_path)
         msg = tkinter.messagebox.askquestion(title=None, message="Are you sure "
                                                                  "you "
                                                                  "want "
@@ -51,13 +49,11 @@ class Directory_Selector():
         if msg == "yes":
             if not exists(ext_path):
                 os.mkdir(ext_path)
-                print("folder created")
                 tkinter.messagebox.showinfo(title=None, message="A {} folder has "
                                                                 "been "
                                                                 "created.".format(
                     extension))
             moved_file_list = []
-            print(moved_file_list)
             for file in listdir(parent):
                 if file.split(".")[-1] == extension and isdir(ext_path):
                     if file in listdir(ext_path):
@@ -67,7 +63,6 @@ class Directory_Selector():
                         shutil.move(join(parent, file), ext_path)
                         if "." in file:
                             moved_file_list.append(file)
-                        print("{} moved".format(file))
                         if moved_file_list:
                             tkinter.messagebox.showinfo(title=None, message="The following "
                                                             "files have been "
@@ -148,7 +143,6 @@ class DataListBox(Scrollbox):
 
     def on_select(self, event):
         if self.linked_boxes:
-            print("self is event.widget")
             index = self.curselection()
             if index:
                 value = self.get(index),
@@ -158,7 +152,7 @@ class DataListBox(Scrollbox):
 
 
 m_window = tkinter.Tk()
-d_selector = Directory_Selector()
+d_selector = DirectorySelector()
 m_window.title('FiMo Folder Cleanup Tool')
 m_window.geometry('768x480')
 m_window.columnconfigure(0, weight=2)
