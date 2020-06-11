@@ -1,10 +1,11 @@
 from os import listdir
-from os.path import isfile, isdir, join
+from os.path import isfile, isdir, join, exists
 import os
 import tkinter
 from tkinter import filedialog, messagebox
 from pathlib import Path
 import shutil
+
 
 class Directory_Selector():
     def __init__(self):
@@ -18,14 +19,13 @@ class Directory_Selector():
         directories_list.requery()
 
     def create_folder(self):
-        print("Make a folder with these extensions dawg")
         parent = join(self.chosen_directory,
                       folders_list.link_value)
         extension_index = extensions_list.curselection()[0]
         extension = extensions_list.get(extension_index)
         print(extension)
-        path = join(parent, extension)
-        print (path)
+        ext_path = join(parent, extension)
+        print(ext_path)
         msg = tkinter.messagebox.askquestion(title=None, message="Are you sure "
                                                                  "you "
                                                                  "want "
@@ -49,23 +49,30 @@ class Directory_Selector():
                                                                  "folder".format(
             extension))
         if msg == "yes":
-            if extension in path and path not in listdir(parent):
-                os.mkdir(path)
+            if not exists(ext_path):
+                os.mkdir(ext_path)
                 print("folder created")
                 tkinter.messagebox.showinfo(title=None, message="A {} folder has "
                                                                 "been "
                                                                 "created.".format(
                     extension))
             moved_file_list = []
+            print(moved_file_list)
             for file in listdir(parent):
-                if file.split(".")[-1] == extension and isdir(path):
-                    shutil.move(join(parent, file), path)
-                    moved_file_list.append(file)
-                    print("{} moved".format(file))
-            tkinter.messagebox.showinfo(title=None, message="The following "
+                if file.split(".")[-1] == extension and isdir(ext_path):
+                    if file in listdir(ext_path):
+                        tkinter.messagebox.showerror(title="Error",
+                                                     message="The file {} is already in your folder, please rename this file so it is not overwritten".format(file))
+                    else:
+                        shutil.move(join(parent, file), ext_path)
+                        if "." in file:
+                            moved_file_list.append(file)
+                        print("{} moved".format(file))
+                        if moved_file_list:
+                            tkinter.messagebox.showinfo(title=None, message="The following "
                                                             "files have been "
                                                             "moved: {}".format(
-                moved_file_list))
+                            moved_file_list))
 
 
 class Scrollbox(tkinter.Listbox):
@@ -87,7 +94,6 @@ class Scrollbox(tkinter.Listbox):
 class DataListBox(Scrollbox):
     def __init__(self, window, path, **kwargs):
         super().__init__(window, **kwargs)
-
         self.linked_boxes = []
         self.link_value = None
         self.link_field = None
@@ -144,10 +150,11 @@ class DataListBox(Scrollbox):
         if self.linked_boxes:
             print("self is event.widget")
             index = self.curselection()
-            value = self.get(index),
-            chosen_path = value[0]
-            for widget in self.linked_boxes:
-                widget.requery(chosen_path)
+            if index:
+                value = self.get(index),
+                chosen_path = value[0]
+                for widget in self.linked_boxes:
+                    widget.requery(chosen_path)
 
 
 m_window = tkinter.Tk()
