@@ -24,8 +24,8 @@ class DirectorySelector:
         extension_index = extensions_list.curselection()[0]
         extension = extensions_list.get(extension_index)
         ext_path = join(parent, extension)
-        msg = tkinter.messagebox.askquestion(title=None, message="Are you sure "
-                                                                 "you "
+        msg = tkinter.messagebox.askquestion(title=None, message="Are you sure"
+                                                                 " you "
                                                                  "want "
                                                                  "to make a "
                                                                  "folder with "
@@ -44,30 +44,38 @@ class DirectorySelector:
                                                                  "moved "
                                                                  "into "
                                                                  "that "
-                                                                 "folder".format(
-            extension))
+                                                                 "folder"
+                                             .format(extension))
         if msg == "yes":
             if not exists(ext_path):
                 os.mkdir(ext_path)
-                tkinter.messagebox.showinfo(title=None, message="A {} folder has "
+                tkinter.messagebox.showinfo(title=None, message="A {} "
+                                                                "folder has "
                                                                 "been "
-                                                                "created.".format(
-                    extension))
+                                                                "created."
+                                            .format(extension))
             moved_file_list = []
             for file in listdir(parent):
                 if file.split(".")[-1] == extension and isdir(ext_path):
                     if file in listdir(ext_path):
                         tkinter.messagebox.showerror(title="Error",
-                                                     message="The file {} is already in your folder, please rename this file so it is not overwritten".format(file))
+                                                     message="The file {} is "
+                                                     "already in your "
+                                                     "folder, please rename "
+                                                     "this file so it is not "
+                                                     "  overwritten".format(
+                                                         file))
                     else:
                         shutil.move(join(parent, file), ext_path)
                         if "." in file:
                             moved_file_list.append(file)
                         if moved_file_list:
-                            tkinter.messagebox.showinfo(title=None, message="The following "
-                                                            "files have been "
-                                                            "moved: {}".format(
-                            moved_file_list))
+                            tkinter.messagebox.showinfo(title=None,
+                                                        message="The "
+                                                                "following "
+                                                        "files have been "
+                                                        "moved: {}".format(
+                                                         moved_file_list))
 
 
 class Scrollbox(tkinter.Listbox):
@@ -141,7 +149,7 @@ class DataListBox(Scrollbox):
                             '.'):
                         self.insert('end', d)
 
-    def on_select(self, event):
+    def on_select(self):
         if self.linked_boxes:
             index = self.curselection()
             if index:
