@@ -149,8 +149,8 @@ class DataListBox(Scrollbox):
                             '.'):
                         self.insert('end', d)
 
-    def on_select(self):
-        if self.linked_boxes:
+    def on_select(self, event):
+        if self.linked_boxes and event:
             index = self.curselection()
             if index:
                 value = self.get(index),
