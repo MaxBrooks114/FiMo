@@ -201,14 +201,16 @@ extensions_list.config(border=2, relief='sunken')
 directories_list.link(extensions_list, "extensions")
 
 # create extensions folder button
-new_button = tkinter.Button(m_window, text="Create Folder",
-                            command=d_selector.create_and_populate)
-new_button.grid(row=2, column=2, sticky='new')
+create_folder_button = tkinter.Button(m_window, text="Create Folder",
+                                      command=d_selector.create_and_populate)
+create_folder_button.grid(row=3, column=2, sticky='new',
+                          padx=(30, 12), pady=(10, 0))
 
 # create file explorer button
-new_button = tkinter.Button(m_window, text="Choose Directory",
-                            command=d_selector.choose_directory)
-new_button.grid(row=2, column=0, sticky='new')
+directory_button = tkinter.Button(m_window, text="Choose Directory",
+                                  command=d_selector.choose_directory)
+directory_button.grid(row=2, column=0, sticky='new', padx=(30, 12),
+                      pady=(10, 0))
 
 if __name__ == "__main__":
     m_window.mainloop()
