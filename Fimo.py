@@ -148,17 +148,10 @@ class DataListBox(Scrollbox):
 
         else:
             self.clear()
-            if not d_selector.chosen_directory:
-                for d in os.listdir(d_selector.home):
-                    if isdir(join(d_selector.home, d)) and not d.startswith(
-                            '.'):
-                        self.insert('end', d)
-            else:
-                for d in os.listdir(d_selector.chosen_directory):
-                    if isdir(join(d_selector.chosen_directory, d)) and not \
-                            d.startswith(
-                            '.'):
-                        self.insert('end', d)
+            for d in os.listdir(d_selector.chosen_directory):
+                if isdir(join(d_selector.chosen_directory, d)) and not \
+                        d.startswith('.'):
+                    self.insert('end', d)
 
     def on_select(self, event):
         if self.linked_boxes and event:
@@ -219,4 +212,3 @@ new_button.grid(row=2, column=0, sticky='new')
 
 if __name__ == "__main__":
     m_window.mainloop()
-
