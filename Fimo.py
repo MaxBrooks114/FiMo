@@ -11,19 +11,57 @@ class DirectorySelector:
     def __init__(self):
         self.home = str(Path.home())
         self.chosen_directory = self.home
+        self.parent = None
+        self.extension_index = None
+        self.extension = None
+        self.ext_path = None
 
     def choose_directory(self):
         self.chosen_directory = tkinter.filedialog.askdirectory()
         if not self.chosen_directory:
-            self.chosen_directory = self.home
+            self.chosen_directory = self.home  # if the user cancels the
+            # dialog box without choosing a directory the chosen directory
+            # becomes an empty string so this resets it
         directories_list.requery()
 
     def create_folder(self):
-        parent = join(self.chosen_directory,
-                      folders_list.link_value)
-        extension_index = extensions_list.curselection()[0]
-        extension = extensions_list.get(extension_index)
-        ext_path = join(parent, extension)
+        if not exists(self.ext_path):
+            os.mkdir(self.ext_path)
+            tkinter.messagebox.showinfo(title=None, message="A {} "
+                                                            "folder has "
+                                                            "been "
+                                                            "created."
+                                        .format(self.extension))
+
+    def move_files(self):
+        moved_file_list = []
+        for file in listdir(self.parent):
+            if file.split(".")[-1] == self.extension and isdir(
+                    self.ext_path):
+                if file in listdir(self.ext_path):
+                    tkinter.messagebox.showerror(title="Error",
+                                                 message="The file {} is "
+                                                         "already in your "
+                                                         "folder, please"
+                                                         " rename "
+                                                         "this file so it is "
+                                                         "not "
+                                                         "overwritten".
+                                                 format(file))
+                else:
+                    shutil.move(join(self.parent, file), self.ext_path)
+                    if "." in file:
+                        moved_file_list.append(file)
+        if moved_file_list:
+            tkinter.messagebox.showinfo(title=None, message="The following "
+                                        "files have been moved: "
+                                        "{}".format(moved_file_list))
+
+    def create_and_populate(self):
+        self.parent = join(self.chosen_directory, folders_list.link_value)
+        self.extension_index = extensions_list.curselection()[0]
+        self.extension = extensions_list.get(self.extension_index)
+        self.ext_path = join(self.parent, self.extension)
         msg = tkinter.messagebox.askquestion(title=None, message="Are you sure"
                                                                  " you "
                                                                  "want "
@@ -45,37 +83,10 @@ class DirectorySelector:
                                                                  "into "
                                                                  "that "
                                                                  "folder"
-                                             .format(extension))
+                                             .format(self.extension))
         if msg == "yes":
-            if not exists(ext_path):
-                os.mkdir(ext_path)
-                tkinter.messagebox.showinfo(title=None, message="A {} "
-                                                                "folder has "
-                                                                "been "
-                                                                "created."
-                                            .format(extension))
-            moved_file_list = []
-            for file in listdir(parent):
-                if file.split(".")[-1] == extension and isdir(ext_path):
-                    if file in listdir(ext_path):
-                        tkinter.messagebox.showerror(title="Error",
-                                                     message="The file {} is "
-                                                     "already in your "
-                                                     "folder, please rename "
-                                                     "this file so it is not "
-                                                     "  overwritten".format(
-                                                         file))
-                    else:
-                        shutil.move(join(parent, file), ext_path)
-                        if "." in file:
-                            moved_file_list.append(file)
-                        if moved_file_list:
-                            tkinter.messagebox.showinfo(title=None,
-                                                        message="The "
-                                                                "following "
-                                                        "files have been "
-                                                        "moved: {}".format(
-                                                         moved_file_list))
+            self.create_folder()
+            self.move_files()
 
 
 class Scrollbox(tkinter.Listbox):
@@ -172,6 +183,7 @@ m_window.rowconfigure(1, weight=5)
 m_window.rowconfigure(2, weight=5)
 m_window.rowconfigure(3, weight=1)
 
+
 # ===labels===
 tkinter.Label(m_window, text="Directories").grid(row=0, column=0)
 tkinter.Label(m_window, text="Files and Folders").grid(row=0, column=1)
@@ -197,7 +209,7 @@ directories_list.link(extensions_list, "extensions")
 
 # create extensions folder button
 new_button = tkinter.Button(m_window, text="Create Folder",
-                            command=d_selector.create_folder)
+                            command=d_selector.create_and_populate)
 new_button.grid(row=2, column=2, sticky='new')
 
 # create file explorer button
@@ -207,3 +219,4 @@ new_button.grid(row=2, column=0, sticky='new')
 
 if __name__ == "__main__":
     m_window.mainloop()
+
